@@ -1,0 +1,83 @@
+<div class="row">
+  <div class="col">
+    <form [formGroup]="form" class="jumbotron">
+      <h2>User details</h2>
+      <div class="form-group">
+        <label for="id">id</label>
+        <input type="text" class="form-control" id="id" name="id" formControlName="id" readonly>
+      </div>
+      <div class="form-group">
+        <label for="name">name</label>
+        <input type="text" class="form-control" id="name" name="name" formControlName="name">
+      </div>
+      <div class="form-group">
+        <label for="password">password</label>
+        <input type="text" class="form-control" id="password" name="password" formControlName="password">
+      </div>
+      <div class="row">
+        <div class="col-auto">
+          <button class="btn btn-warning" type="button"
+                  (click)="onUpdateOrCreate()">{{ userId === 'new' ? 'Create' : 'Update'}}</button>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-danger" type="button" (click)="onDelete()">Delete</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ng-container *ngIf="userId !== 'new'">
+
+  <hr>
+  <h2>Teams</h2>
+  <div class="row">
+    <div class="col">
+      <table class="table table-hover table-bordered ">
+        <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">name</th>
+          <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let team of user.teams">
+          <th class="btn-link" [routerLink]="['/teams',team.id]" scope="row">{{ team.id }}</th>
+          <td class="btn-link" [routerLink]="['/teams',team.id]">{{ team.name }}</td>
+          <td>
+            <button class="btn btn-danger" type="button" (click)="onLeave(team)">Leave team</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="row">
+    <div class="col">
+
+      <form class="form-inline">
+        <div class="form-group">
+          <input name="searchbar" id="searchbar" type="text" class="form-control"
+                 [(ngModel)]="model"
+                 [ngbTypeahead]="search"
+                 [inputFormatter]="formatTeamName"
+                 [resultFormatter]="formatTeamName"
+                 [editable]='false'/>
+        </div>
+        <div class="form-group">
+          <input [ngModel]="formatTeamName(model)" class="form-control" type="text" name="selectedTeam"
+                 id="selectedTeam" readonly>
+        </div>
+        <div class="form-group">
+          <button type="button" class="btn btn-primary" (click)="onJoinTeam()">Join team</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</ng-container>
+

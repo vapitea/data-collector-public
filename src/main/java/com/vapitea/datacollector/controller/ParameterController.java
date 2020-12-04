@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:4200"})
 public class ParameterController {
     private final ParameterService parameterService;
 

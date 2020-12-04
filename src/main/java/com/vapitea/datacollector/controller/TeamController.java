@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:4200"})
 public class TeamController {
 
     private final TeamService teamService;

@@ -13,6 +13,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:8080", "http://localhost:4200"})
 @Slf4j
 public class MeasurementController {
     private final MeasurementService measurementService;
