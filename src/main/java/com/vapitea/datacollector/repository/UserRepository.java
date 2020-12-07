@@ -13,10 +13,12 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.teams")
-    public List<User> findAllWithTeamsFetchedEagerly();
+  @Query("SELECT u FROM User u LEFT JOIN FETCH u.teams")
+   List<User> findAllWithTeamsFetchedEagerly();
 
-    @Query("SELECT u FROM User u LEFT JOIN FETCH u.teams WHERE u.id = :id")
-    public Optional<User> getOneWithTeamsFetchedEagerly(@Param("id") Long id);
+  @Query("SELECT u FROM User u LEFT JOIN FETCH u.teams WHERE u.id = :id")
+   Optional<User> getOneWithTeamsFetchedEagerly(@Param("id") Long id);
+
+  Optional<User> findByName(String username);
 
 }

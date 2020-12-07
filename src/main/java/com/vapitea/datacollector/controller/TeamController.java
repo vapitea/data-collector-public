@@ -1,95 +1,117 @@
 package com.vapitea.datacollector.controller;
 
-import com.vapitea.datacollector.model.DataSource;
+import com.vapitea.datacollector.dto.DataSourceDto;
+import com.vapitea.datacollector.dto.TeamDto;
+import com.vapitea.datacollector.dto.UserDto;
+import com.vapitea.datacollector.mapper.DataSourceMapper;
+import com.vapitea.datacollector.mapper.TeamMapper;
+import com.vapitea.datacollector.mapper.UserMapper;
 import com.vapitea.datacollector.model.Team;
-import com.vapitea.datacollector.model.User;
 import com.vapitea.datacollector.service.DataSourceService;
 import com.vapitea.datacollector.service.TeamService;
 import com.vapitea.datacollector.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@RestController
+@RequiredArgsConstructor
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:4200"})
+@RestController
 public class TeamController {
 
-    private final TeamService teamService;
-    private final UserService userService;
-    private final DataSourceService dataSourceService;
+  private final TeamService teamService;
+  private final UserService userService;
+  private final DataSourceService dataSourceService;
+  private final UserMapper userMapper;
+  private final TeamMapper teamMapper;
+  private final DataSourceMapper dataSourceMapper;
 
-    public TeamController(TeamService teamService, UserService userService, DataSourceService dataSourceService) {
-        this.teamService = teamService;
-        this.userService = userService;
-        this.dataSourceService = dataSourceService;
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @GetMapping("api/v1.0/teams")
+  public List<TeamDto> getTeams() {
+    return teamService.getAll().stream().map(teamMapper::teamToTeamDto).collect(Collectors.toList());
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything') OR ( hasAuthority('USER.Team.read') AND @authorizationManager.isOwnTeam(authentication, #id) )")
+  @GetMapping("api/v1.0/teams/{id}")
+  public TeamDto getTeam(@PathVariable Long id) {
+    return teamMapper.teamToTeamDto(teamService.getOne(id));
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @DeleteMapping("api/v1.0/teams/{id}")
+  public void deleteTeam(@PathVariable Long id, HttpServletResponse response) {
+    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+    teamService.deleteTeam(id);
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @PutMapping("api/v1.0/teams/{id}")
+  public void modifyTeam(@PathVariable Long id, @RequestBody TeamDto teamDto, HttpServletResponse response) {
+    if (!id.equals(teamDto.getId())) {
+      response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
     }
+    teamService.modifyTeam(teamMapper.teamDtoToTeam(teamDto));
+    response.setStatus(HttpServletResponse.SC_ACCEPTED);
+  }
 
-    @GetMapping("api/v1.0/teams")
-    public List<Team> getTeams() {
-        return teamService.getAll();
+  @PreAuthorize("hasAuthority('ADMIN.doAnything') OR ( hasAuthority('OPERATOR.Team.Users.read') AND @authorizationManager.isOwnTeam(authentication, #id) )")
+  @GetMapping("api/v1.0/teams/{id}/users")
+  public List<UserDto> getUsersOfTeam(@PathVariable Long id) {
+    return teamService.getTeamWithUsers(id).getUsers().stream().map(userMapper::userToUserDto).collect(Collectors.toList());
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @DeleteMapping("api/v1.0/teams/{teamId}/users/{userId}")
+  public void removeUserFromTeam(@PathVariable Long teamId, @PathVariable Long userId, HttpServletResponse response) {
+    userService.removeUserFromTeam(userId, teamId);
+    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @PostMapping("/api/v1.0/teams/{teamId}/users/{userId}")
+  public void addTeamToUser(@PathVariable Long teamId, @PathVariable Long userId, HttpServletResponse response) {
+    teamService.addUserToTeam(userId, teamId);
+    response.setStatus(HttpServletResponse.SC_CREATED);
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything') OR ( hasAuthority('USER.DataSources.read') AND @authorizationManager.isOwnTeam(authentication, #id) )")
+  @GetMapping("/api/v1.0/teams/{id}/dataSources")
+  public List<DataSourceDto> getDataSourcesOfTeam(@PathVariable Long id) {
+    return teamService.getOneWithDataSources(id).getDataSources()
+      .stream().map(dataSourceMapper::dataSourceToDataSourceDto).collect(Collectors.toList());
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything') OR ( hasAuthority('OPERATOR.DataSource.delete') AND @authorizationManager.isOwnTeam(authentication, #teamId) )")
+  @DeleteMapping("/api/v1.0/teams/{teamId}/dataSources/{dataSourceId}")
+  public void deleteDataSourceOfTeam(@PathVariable Long teamId, @PathVariable Long dataSourceId, HttpServletResponse response) {
+    dataSourceService.deleteDataSource(dataSourceId);
+    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+  }
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @PostMapping("/api/v1.0/teams")
+  public TeamDto createNewTeam(@RequestBody TeamDto teamDto, HttpServletResponse response) {
+    if (teamDto.getId() != null) {
+      response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+      return null;
     }
+    response.setStatus(HttpServletResponse.SC_CREATED);
+    return teamMapper.teamToTeamDto(teamService.createTeam(teamMapper.teamDtoToTeam(teamDto)));
+  }
 
-    @GetMapping("api/v1.0/teams/{id}")
-    public Team getTeam(@PathVariable Long id) {
-        return teamService.getOne(id);
-    }
-
-    @DeleteMapping("api/v1.0/teams/{id}")
-    public void deleteTeam(@PathVariable Long id) {
-        teamService.deleteTeam(id);
-    }
-
-    @PutMapping("api/v1.0/teams/{id}")
-    public Team modifyTeam(@PathVariable Long id, @RequestBody Team team, HttpServletResponse response) {
-        if (!id.equals(team.getId())) {
-            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            return null;
-        }
-        return teamService.modifyTeam(team);
-
-    }
-
-    @GetMapping("api/v1.0/teams/{id}/users")
-    public List<User> getUsersOfTeam(@PathVariable Long id) {
-        return teamService.getTeamWithUsers(id).getUsers();
-    }
-
-    @DeleteMapping("api/v1.0/teams/{teamId}/users/{userId}")
-    public void removeUserFromTeam(@PathVariable Long teamId, @PathVariable Long userId, HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-        userService.removeUserFromTeam(userId, teamId);
-    }
-
-    @PostMapping("/api/v1.0/teams/{id}/users")
-    public Team addTeamToUser(@PathVariable Long id, @RequestBody User user, HttpServletResponse response) {
-        return teamService.addUserToTeam(user, id);
-    }
-
-    @GetMapping("/api/v1.0/teams/{id}/dataSources")
-    public List<DataSource> getDataSourcesOfTeam(@PathVariable Long id) {
-        return teamService.getOneWithDataSources(id).getDataSources();
-    }
-
-    @DeleteMapping("/api/v1.0/teams/{teamId}/dataSources/{dataSourceId}")
-    public void deleteDataSourceOfTeam(@PathVariable Long teamId, @PathVariable Long dataSourceId, HttpServletResponse response) {
-        dataSourceService.deleteDataSource(dataSourceId);
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-    }
-
-    @PostMapping("/api/v1.0/teams")
-    public Team createNewTeam(@RequestBody Team team, HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_CREATED);
-        return teamService.createTeam(team.getName(), team.getDescription());
-    }
-
-    @PostMapping("/api/v1.0/teams/{id}/dataSources")
-    public DataSource createNewDataSource(@PathVariable Long id, @RequestBody DataSource dataSource, HttpServletResponse response) {
-        Team team = Team.builder().id(id).build();
-        response.setStatus(HttpServletResponse.SC_CREATED);
-        return dataSourceService.createDataSource(dataSource, team);
-
-    }
+  @PreAuthorize("hasAuthority('ADMIN.doAnything') OR ( hasAuthority('OPERATOR.DataSource.create') AND @authorizationManager.isOwnTeam(authentication, #id) )")
+  @PostMapping("/api/v1.0/teams/{id}/dataSources")
+  public DataSourceDto createNewDataSource(@PathVariable Long id, @RequestBody DataSourceDto dataSourceDto, HttpServletResponse response) {
+    Team team = Team.builder().id(id).build();
+    response.setStatus(HttpServletResponse.SC_CREATED);
+    return dataSourceMapper.dataSourceToDataSourceDto(dataSourceService.createDataSource(dataSourceMapper.dataSourceDtoToDataSource(dataSourceDto), team));
+  }
 
 }
 

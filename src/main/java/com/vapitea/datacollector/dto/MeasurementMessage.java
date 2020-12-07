@@ -1,8 +1,6 @@
 package com.vapitea.datacollector.dto;
 
-
 import lombok.Data;
-
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;

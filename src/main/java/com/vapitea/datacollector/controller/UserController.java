@@ -1,70 +1,85 @@
 package com.vapitea.datacollector.controller;
 
-import com.vapitea.datacollector.model.Team;
-import com.vapitea.datacollector.model.User;
+import com.vapitea.datacollector.dto.TeamDto;
+import com.vapitea.datacollector.dto.UserDto;
+import com.vapitea.datacollector.mapper.TeamMapper;
+import com.vapitea.datacollector.mapper.UserMapper;
 import com.vapitea.datacollector.service.UserService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @CrossOrigin(origins = {"http://localhost:8080", "http://localhost:4200"})
+@RequiredArgsConstructor
 @RestController
 public class UserController {
 
-    private final UserService userService;
+  private final UserService userService;
+  private final UserMapper userMapper;
+  private final TeamMapper teamMapper;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
   @GetMapping("api/v1.0/users")
-    public List<User> getUsers() {
-        return userService.getAll();
-    }
+  public List<UserDto> getUsers() {
+    return userService.getAll().stream().map(userMapper::userToUserDto).collect(Collectors.toList());
+  }
 
-    @PostMapping("api/v1.0/users")
-    public User createUser(@RequestBody User user, HttpServletResponse response) {
-        response.setStatus(HttpServletResponse.SC_CREATED);
-        return userService.createUser(user.getName(), user.getPassword()); //TODO Change this to DTO
-    }
+  @PreAuthorize("hasAuthority('ADMIN.doAnything') OR ( hasAuthority('USER.User.read') AND @authorizationManager.isOwnUser(authentication, #id) )")
+  @GetMapping("api/v1.0/users/{id}")
+  public UserDto getUser(@PathVariable Long id) {
+    return userMapper.userToUserDto(userService.getOne(id));
+  }
 
-    @GetMapping("api/v1.0/users/{id}")
-    public User getUser(@PathVariable Long id) {
-        return userService.getOne(id);
-    }
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @PostMapping("api/v1.0/users")
+  public UserDto createUser(@RequestBody UserDto userDto, HttpServletResponse response) {
+    response.setStatus(HttpServletResponse.SC_CREATED);
+    return userMapper.userToUserDto(userService.createUser(userDto));
+  }
 
-    @GetMapping("api/v1.0/users/{id}/teams")
-    public List<Team> getTeamsOfUser(@PathVariable Long id) {
-        return userService.getOneWithTeams(id).getTeams();
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @PutMapping("/api/v1.0/users/{id}")
+  public UserDto modifyUser(@RequestBody UserDto userDto, @PathVariable Long id, HttpServletResponse response) {
+    if (!id.equals(userDto.getId())) {
+      response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+      return null;
     }
+    response.setStatus(HttpServletResponse.SC_ACCEPTED);
+    return userMapper.userToUserDto(userService.modifyUser(userDto));
+  }
 
-    @PutMapping("/api/v1.0/users/{id}")
-    public User modifyUser(@RequestBody User user, @PathVariable Long id, HttpServletResponse response) {
-        if (!id.equals(user.getId())) {
-            response.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
-            return null;
-        }
-        return userService.modifyUser(id, user);
-    }
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @DeleteMapping("/api/v1.0/users/{id}")
+  public void deleteUser(@PathVariable Long id, HttpServletResponse response) {
+    userService.deleteUser(id);
+    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+  }
 
-    @DeleteMapping("/api/v1.0/users/{id}")
-    public void deleteUser(@PathVariable Long id, HttpServletResponse response) {
+  @PreAuthorize("hasAuthority('ADMIN.doAnything') OR ( hasAuthority('USER.Teams.read') AND @authorizationManager.isOwnUser(authentication, #id) )")
+  @GetMapping("api/v1.0/users/{id}/teams")
+  public List<TeamDto> getTeamsOfUser(@PathVariable Long id) {
+    return userService.getOneWithTeams(id).getTeams()
+      .stream().map(teamMapper::teamToTeamDto).collect(Collectors.toList());
+  }
 
-        userService.deleteUser(id);
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-    }
 
-    @PostMapping("/api/v1.0/users/{id}/teams")
-    public User addTeamToUser(@PathVariable Long id, @RequestBody Team team, HttpServletResponse response) {
-        User user = User.builder().id(id).build();
-        return userService.addUserToTeam(user, team);
-    }
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @PostMapping("/api/v1.0/users/{userId}/teams/{teamId}")
+  public void addTeamToUser(@PathVariable Long userId, @PathVariable Long teamId, HttpServletResponse response) {
+    response.setStatus(HttpServletResponse.SC_CREATED);
+    userService.addUserToTeam(userId, teamId);
+  }
 
-    @DeleteMapping("/api/v1.0/users/{userId}/teams/{teamId}")
-    public void removeUserFromTeam(@PathVariable Long userId, @PathVariable Long teamId, HttpServletResponse response) {
-        userService.removeUserFromTeam(userId, teamId);
-        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
-    }
+  @PreAuthorize("hasAuthority('ADMIN.doAnything')")
+  @DeleteMapping("/api/v1.0/users/{userId}/teams/{teamId}")
+  public void removeUserFromTeam(@PathVariable Long userId, @PathVariable Long teamId, HttpServletResponse response) {
+    userService.removeUserFromTeam(userId, teamId);
+    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+  }
 
 }

@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS data_source;
 DROP TABLE IF EXISTS team;
 DROP TABLE IF EXISTS user;
 
+
+
 CREATE TABLE team (
     id IDENTITY PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -19,7 +21,6 @@ CREATE TABLE data_source (
     description CLOB,
     team_id BIGINT NOT NULL,
     FOREIGN KEY(team_id) REFERENCES team(id)
-
 );
 
 CREATE TABLE parameter (
@@ -41,9 +42,14 @@ CREATE TABLE measurement (
 
 CREATE TABLE user (
     id IDENTITY PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    dtype VARCHAR(31) NOT NULL
+    dtype VARCHAR(31) NOT NULL,
+    account_non_expired BIT,
+    account_non_locked BIT,
+    credentials_non_expired BIT,
+    enabled BIT
+
 );
 
 CREATE TABLE team_user (
@@ -53,5 +59,6 @@ CREATE TABLE team_user (
     FOREIGN KEY(team_id) REFERENCES team(id),
     FOREIGN KEY(user_id) REFERENCES user(id)
 );
+
 
 /* TODO Create indexes on foreign keys and commonly filtered columns  */
