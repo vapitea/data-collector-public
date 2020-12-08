@@ -1,27 +1,34 @@
-# DataCollectorClient
+# data-collector
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.2.
+This project contains a Spring boot 2 and an Angular 11 application. The project can be built with Java 11 and Maven 3.6+.  
+The Angular app is built and packaged using the [frontend-maven-plugin](https://github.com/eirslett/frontend-maven-plugin)
 
-## Development server
+## Building
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+```bash
+mvn clean package
+```
 
-## Code scaffolding
+## Running
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```
+mvn spring-boot:run
+```
+OR
 
-## Build
+```bash
+java -jar target/data-collector-0.0.1-SNAPSHOT.jar
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+## Debug
 
-## Running unit tests
+H2 database console available at http://localhost:8080/h2/  
+Angular app is running at http://localhost:8080  
+Usable credentials:  
+-Admin "Lewis Hamilton":"12345"  
+-Operator "Valtteri Bottas":"password"  
+-User "Max Verstappen":"qwerty"  
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+##Docs
 
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+[specifikacio.md](./documents/specifikacio/specifikacio.md)
