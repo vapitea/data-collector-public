@@ -42,10 +42,11 @@ public class DataSourceService {
 
   @Transactional
   public DataSource modifyDataSource(DataSource dataSource) {
-    DataSource oldDataSource = dataSourceRepository.findById(dataSource.getId()).orElseThrow();
-    Team team = oldDataSource.getTeam();
-    dataSource.setTeam(team);
-    //TODO also add parameters maybe?
-    return dataSourceRepository.save(dataSource);
+    DataSource managedDataSource = dataSourceRepository.findById(dataSource.getId()).orElseThrow();
+    managedDataSource.setUuid(dataSource.getUuid());
+    managedDataSource.setDescription(dataSource.getDescription());
+    managedDataSource.setLocation(dataSource.getLocation());
+    managedDataSource.setName(dataSource.getName());
+    return dataSourceRepository.save(managedDataSource);
   }
 }

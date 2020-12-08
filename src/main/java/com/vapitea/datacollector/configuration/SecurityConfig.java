@@ -39,16 +39,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       .and()
       .authorizeRequests().antMatchers("/h2/**").permitAll();
 
+
     //Allowing access for anyone to post measurements if they know DataSource UUID
     http.authorizeRequests().antMatchers("/api/v1.0/measurements").permitAll();
 
-    http
-      .authorizeRequests()
-      .anyRequest()
-      .authenticated();
+    //Securing rest api
+    http.authorizeRequests().antMatchers("/api/**").authenticated();
 
 
-    //h2 console config
+
+    //allowing access to the rest of the resources to redirect to single page application, might be a bad idea
+    http.authorizeRequests().anyRequest().permitAll();
 
   }
 
@@ -56,6 +57,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   PasswordEncoder passwordEncoder() {
     return PasswordEncoderFactories.createDelegatingPasswordEncoder();
   }
-
 
 }

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {User} from "../../model/User";
 import {Team} from "../../model/Team";
-import {FormControl, FormGroup, NgForm} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 import {Observable} from "rxjs";
 import {debounceTime, distinctUntilChanged, filter, map} from "rxjs/operators";
 import {HttpService} from "../../service/Http.service";
@@ -19,26 +19,14 @@ export class UserDetailComponent implements OnInit {
   model: Team;
   private teams: Team[] = []
 
-  constructor(private httpService: HttpService, private route: ActivatedRoute, private router: Router) {
-    this.user = new User(null, null, null, []);
+  constructor(public httpService: HttpService, private route: ActivatedRoute, private router: Router) {
+    this.user = new User(null, null, null, [], null);
   }
 
   ngOnInit(): void {
     this.bindUser();
     this.initForm();
     this.initSearchbar();
-  }
-
-  private initForm() {
-    this.form = new FormGroup({
-      id: new FormControl(),
-      name: new FormControl(),
-      password: new FormControl()
-    })
-  }
-
-  private setForm(user: User) {
-    this.form.reset({id: user.id, name: user.name, password: user.password});
   }
 
   onUpdateOrCreate() {
@@ -83,6 +71,26 @@ export class UserDetailComponent implements OnInit {
     map(term => this.teams.filter(team => new RegExp(term, 'mi').test(team.name)).slice(0, 16))
   )
 
+  onJoinTeam() {
+    this.httpService.addUserToTeam(this.userId, this.model.id).subscribe((user: User) => {
+      this.loadUserWithTeams();
+      this.model = null;
+    });
+  }
+
+  private initForm() {
+    this.form = new FormGroup({
+      id: new FormControl(),
+      name: new FormControl(),
+      password: new FormControl(),
+      dtype: new FormControl()
+    })
+  }
+
+  private setForm(user: User) {
+    this.form.reset({id: user.id, name: user.name, password: user.password, dtype: user.dtype});
+  }
+
   private bindUser() {
     this.route.params.subscribe((params: Params) => {
       this.userId = params['userId'];
@@ -103,13 +111,8 @@ export class UserDetailComponent implements OnInit {
   }
 
   private initSearchbar() {
-    this.httpService.getTeams().subscribe(teams => this.teams = teams);
-  }
-
-  onJoinTeam() {
-    this.httpService.addUserToTeam(this.userId, this.model).subscribe((user: User) => {
-      this.loadUserWithTeams();
-      this.model = null;
-    });
+    if (this.httpService.getRole() === 'Admin') {
+      this.httpService.getTeams().subscribe(teams => this.teams = teams);
+    }
   }
 }

@@ -1,0 +1,17 @@
+<h2>Measurements</h2>
+<table class="table table-hover table-bordered table-striped">
+  <thead>
+  <tr>
+    <th scope="col">id</th>
+    <th scope="col">timestamp</th>
+    <th scope="col">value</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let measurement of measurements">
+    <th scope="row">{{ measurement.id }}</th>
+    <td>{{ measurement.timestamp }}</td>
+    <td>{{ measurement.value }}</td>
+  </tr>
+  </tbody>
+</table>

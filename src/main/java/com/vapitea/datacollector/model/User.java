@@ -57,6 +57,8 @@ public class User implements UserDetails, CredentialsContainer {
   @Override
   public Set<GrantedAuthority> getAuthorities() {
     return Set.of(
+
+      new SimpleGrantedAuthority("USER.User.readOwn"),
       new SimpleGrantedAuthority("USER.User.read"),
       new SimpleGrantedAuthority("USER.Teams.read"),
       new SimpleGrantedAuthority("USER.Team.read"),

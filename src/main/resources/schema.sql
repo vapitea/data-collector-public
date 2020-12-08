@@ -15,7 +15,7 @@ CREATE TABLE team (
 
 CREATE TABLE data_source (
     id IDENTITY PRIMARY KEY,
-    uuid VARCHAR(255) NOT NULL,
+    uuid VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
     location VARCHAR(255),
     description CLOB,

@@ -37,8 +37,12 @@ public class TeamService {
     teamRepository.deleteById(id);
   }
 
+  @Transactional
   public void modifyTeam(Team team) {
-    teamRepository.save(team);
+    Team managedTeam = teamRepository.findById(team.getId()).orElseThrow();
+    managedTeam.setName(team.getName());
+    managedTeam.setDescription(team.getDescription());
+    teamRepository.save(managedTeam);
   }
 
 

@@ -11,7 +11,13 @@ import {AppRoutingModule} from "./app-routing.module";
 import {UserListComponent} from './view/user-list/user-list.component';
 import {UserDetailComponent} from './view/user-detail/user-detail.component';
 import {HttpService} from "./service/Http.service";
-import {HttpClient, HttpClientModule} from "@angular/common/http";
+import {HttpClientModule} from "@angular/common/http";
+import {LoginComponent} from './view/login/login.component';
+import { TeamDetailComponent } from './view/team-detail/team-detail.component';
+import { TeamListComponent } from './view/team-list/team-list.component';
+import { DataSourceDetailComponent } from './view/data-source-detail/data-source-detail.component';
+import { ParameterDetailComponent } from './view/parameter-detail/parameter-detail.component';
+import { MeasurementListComponent } from './view/measurement-list/measurement-list.component';
 
 
 @NgModule({
@@ -20,7 +26,13 @@ import {HttpClient, HttpClientModule} from "@angular/common/http";
     HeaderComponent,
     HomeComponent,
     UserListComponent,
-    UserDetailComponent
+    UserDetailComponent,
+    LoginComponent,
+    TeamDetailComponent,
+    TeamListComponent,
+    DataSourceDetailComponent,
+    ParameterDetailComponent,
+    MeasurementListComponent
   ],
   imports: [
     BrowserModule,

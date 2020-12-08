@@ -9,11 +9,11 @@
   <div [ngbCollapse]="isMenuCollapsed" class="collapse navbar-collapse">
     <!-- Links -->
     <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="#">Sign in</a>
+      <li class="nav-item" *ngIf="!this.httpService.isLoggedIn()">
+        <a class="nav-link" routerLink="/login">Sign in</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Logout</a>
+      <li class="nav-item" *ngIf="this.httpService.isLoggedIn()">
+        <a class="nav-link" (click)="onLogout()">Logout</a>
       </li>
     </ul>
   </div>

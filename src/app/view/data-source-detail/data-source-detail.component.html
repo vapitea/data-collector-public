@@ -1,0 +1,71 @@
+<div class="row">
+  <div class="col">
+    <form [formGroup]="form" class="jumbotron">
+      <h2>DataSource details</h2>
+      <div class="form-group">
+        <label for="id">id</label>
+        <input type="text" class="form-control" id="id" name="id" formControlName="id" readonly>
+      </div>
+      <div class="form-group">
+        <label for="uuid">uuid</label>
+        <input type="text" class="form-control" id="uuid" name="uuid" formControlName="uuid" [readonly]="httpService.getRole() === 'User'">
+      </div>
+      <div class="form-group">
+        <label for="name">name</label>
+        <input type="text" class="form-control" id="name" name="name" formControlName="name" [readonly]="httpService.getRole() === 'User'">
+      </div>
+      <div class="form-group">
+        <label for="location">location</label>
+        <input type="text" class="form-control" id="location" name="location" formControlName="location" [readonly]="httpService.getRole() === 'User'">
+      </div>
+      <div class="form-group">
+        <label for="description">description</label>
+        <textarea rows="6" class="form-control" id="description" name="description" [readonly]="httpService.getRole() === 'User'"
+                  formControlName="description"></textarea>
+      </div>
+      <div class="row" *ngIf="httpService.getRole() !== 'User'">
+        <div class="col-auto">
+          <button class="btn btn-warning" type="button"
+                  (click)="onUpdateOrCreate()">{{ dataSourceId === 'new' ? 'Create' : 'Update'}}</button>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-danger" type="button" [disabled]="dataSourceId === 'new'" (click)="onDelete()">Delete
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ng-container *ngIf="dataSourceId !== 'new'">
+
+  <hr>
+
+  <h2>Parameters<button *ngIf="httpService.getRole() !== 'User'" class="btn btn-success ml-5" [routerLink]="['parameters', 'new']">New Parameter</button></h2>
+  <div class="row">
+    <div class="col">
+      <table class="table table-hover table-bordered ">
+        <thead>
+        <tr>
+          <th scope="col">id</th>
+          <th scope="col">name</th>
+          <th scope="col">unit</th>
+          <th *ngIf="httpService.getRole() !== 'User'" scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let parameter of dataSource.parameters">
+          <th class="btn-link" [routerLink]="['parameters',parameter.id]" scope="row">{{ parameter.id }}</th>
+          <td class="btn-link" [routerLink]="['parameters',parameter.id]">{{ parameter.name }}</td>
+          <td class="btn-link" [routerLink]="['parameters',parameter.id]">{{ parameter.unit }}</td>
+          <td *ngIf="httpService.getRole() !== 'User'">
+            <button class="btn btn-danger" type="button" (click)="onDeleteParameter(parameter)">Delete</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <hr>
+</ng-container>
+

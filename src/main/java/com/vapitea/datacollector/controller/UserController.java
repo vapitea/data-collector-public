@@ -4,9 +4,11 @@ import com.vapitea.datacollector.dto.TeamDto;
 import com.vapitea.datacollector.dto.UserDto;
 import com.vapitea.datacollector.mapper.TeamMapper;
 import com.vapitea.datacollector.mapper.UserMapper;
+import com.vapitea.datacollector.model.User;
 import com.vapitea.datacollector.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -33,6 +35,13 @@ public class UserController {
   @GetMapping("api/v1.0/users/{id}")
   public UserDto getUser(@PathVariable Long id) {
     return userMapper.userToUserDto(userService.getOne(id));
+  }
+
+
+  @PreAuthorize("hasAuthority('ADMIN.doAnything') OR  hasAuthority('USER.User.readOwn')")
+  @GetMapping("api/v1.0/ownUser")
+  public UserDto getUser(@AuthenticationPrincipal User user) {
+    return userMapper.userToUserDto(userService.getOne(user.getId()));
   }
 
   @PreAuthorize("hasAuthority('ADMIN.doAnything')")

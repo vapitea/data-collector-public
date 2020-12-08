@@ -1,0 +1,42 @@
+<div class="row">
+  <div class="col">
+    <form [formGroup]="form" class="jumbotron">
+      <h2>Parameter details</h2>
+      <div class="form-group">
+        <label for="id">id</label>
+        <input type="text" class="form-control" id="id" name="id" formControlName="id" readonly>
+      </div>
+      <div class="form-group">
+        <label for="name">name</label>
+        <input type="text" class="form-control" id="name" name="name" formControlName="name" [readOnly]="httpService.getRole() === 'User'">
+      </div>
+      <div class="form-group">
+        <label for="unit">unit</label>
+        <input type="text" class="form-control" id="unit" name="unit" formControlName="unit" [readOnly]="httpService.getRole() === 'User'">
+      </div>
+      <div class="form-group">
+        <label for="description">description</label>
+        <textarea rows="6" class="form-control" id="description" name="description" [readOnly]="httpService.getRole() === 'User'"
+                  formControlName="description"></textarea>
+      </div>
+      <div class="row" *ngIf="httpService.getRole() !== 'User'">
+        <div class="col-auto">
+          <button class="btn btn-warning" type="button"
+                  (click)="onUpdateOrCreate()">{{ parameterId === 'new' ? 'Create' : 'Update'}}</button>
+        </div>
+        <div class="col-auto">
+          <button class="btn btn-danger" type="button" [disabled]="parameterId === 'new'" (click)="onDelete()">Delete
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<ng-container *ngIf="parameterId !== 'new'">
+  <hr>
+  <h2>
+    <button class="btn btn-primary" [routerLink]="['measurements']">Show Measurements</button>
+  </h2>
+</ng-container>
+

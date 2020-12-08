@@ -1,12 +1,24 @@
 <div class="row">
   <div class="col">
-    <h2>Home component</h2>
-    <h3>Test links</h3>
-    <div>
-      <a routerLink="/users">/users</a>
-    </div>
-    <div>
-      <a routerLink="/users/1">/users/1</a>
+    <div class="jumbotron">
+      <div class="row">
+        <div class="col">
+          <h2>Home</h2>
+          <ng-container *ngIf="user.id">
+            <p *ngIf="user.id">You are logged in as <a [routerLink]="['users', user.id]">{{ user.name }}.</a></p>
+            <p>Click on your name to see your data!</p>
+
+            <ng-container  *ngIf="user.dtype === 'Admin'">
+              <p>You're an Admin, you can edit the <a routerLink="/users">list of user</a>, and the <a routerLink="/teams">list of teams</a>.</p>
+            </ng-container>
+          </ng-container>
+
+
+          <ng-container *ngIf="!user.id">
+            <p>Please log in to use the application!</p>
+          </ng-container>
+        </div>
+      </div>
     </div>
   </div>
 </div>

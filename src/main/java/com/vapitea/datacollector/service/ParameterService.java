@@ -7,6 +7,8 @@ import com.vapitea.datacollector.repository.ParameterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.crypto.Data;
+
 @Service
 public class ParameterService {
   private final ParameterRepository parameterRepository;
@@ -35,10 +37,11 @@ public class ParameterService {
 
   @Transactional
   public Parameter modifyParameter(Parameter parameter) {
-    //TODO maybe set measurements too?
-    Parameter oldParameter = parameterRepository.findById(parameter.getId()).orElseThrow();
-    DataSource dataSource = oldParameter.getDataSource();
-    parameter.setDataSource(dataSource);
-    return parameterRepository.save(parameter);
+    Parameter managedParameter = parameterRepository.findById(parameter.getId()).orElseThrow();
+
+    managedParameter.setName(parameter.getName());
+    managedParameter.setUnit(parameter.getUnit());
+    managedParameter.setDescription(parameter.getDescription());
+    return parameterRepository.save(managedParameter);
   }
 }
