@@ -7,5 +7,5 @@ import java.util.Optional;
 
 public interface DataSourceRepository extends JpaRepository<DataSource, Long> {
 
-   Optional<DataSource> findByUuid(String uuid);
+  Optional<DataSource> findByUuid(String uuid);
 }

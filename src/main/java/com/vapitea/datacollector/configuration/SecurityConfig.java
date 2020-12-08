@@ -47,7 +47,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.authorizeRequests().antMatchers("/api/**").authenticated();
 
 
-
     //allowing access to the rest of the resources to redirect to single page application, might be a bad idea
     http.authorizeRequests().anyRequest().permitAll();
 

@@ -14,10 +14,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
   @Query("SELECT u FROM User u LEFT JOIN FETCH u.teams")
-   List<User> findAllWithTeamsFetchedEagerly();
+  List<User> findAllWithTeamsFetchedEagerly();
 
   @Query("SELECT u FROM User u LEFT JOIN FETCH u.teams WHERE u.id = :id")
-   Optional<User> getOneWithTeamsFetchedEagerly(@Param("id") Long id);
+  Optional<User> getOneWithTeamsFetchedEagerly(@Param("id") Long id);
 
   Optional<User> findByName(String username);
 

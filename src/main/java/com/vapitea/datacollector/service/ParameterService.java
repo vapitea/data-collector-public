@@ -7,8 +7,6 @@ import com.vapitea.datacollector.repository.ParameterRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.crypto.Data;
-
 @Service
 public class ParameterService {
   private final ParameterRepository parameterRepository;

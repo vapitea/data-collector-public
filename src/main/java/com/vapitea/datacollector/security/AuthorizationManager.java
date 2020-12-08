@@ -6,7 +6,6 @@ import com.vapitea.datacollector.model.Team;
 import com.vapitea.datacollector.model.User;
 import com.vapitea.datacollector.repository.DataSourceRepository;
 import com.vapitea.datacollector.repository.ParameterRepository;
-import com.vapitea.datacollector.repository.TeamRepository;
 import com.vapitea.datacollector.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
