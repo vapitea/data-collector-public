@@ -1,7 +1,7 @@
 # data-collector
 
 This project contains a Spring boot 2 and an Angular 11 application. The project can be built with Java 11 and Maven 3.6+.  
-The Angular app is built and packaged using the [frontend-maven-plugin](https://github.com/eirslett/frontend-maven-plugin)
+The Angular app is built and packaged using the [frontend-maven-plugin](https://github.com/eirslett/frontend-maven-plugin), runs automatically with the rest of the maven build.
 
 ## Building
 
@@ -29,6 +29,6 @@ Usable credentials:
 -Operator "Valtteri Bottas":"password"  
 -User "Max Verstappen":"qwerty"  
 
-##Docs
+## Docs
 
 [specifikacio.md](./documents/specifikacio/specifikacio.md)
