@@ -26,7 +26,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.httpBasic();
 
     //Disabling csrf token
-    http.csrf().disable();
+     http.csrf().disable();
 
     //This line disables JSESSIONID cookies, cookies should be disabled until Csrf vulnerability is dealt with
     http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

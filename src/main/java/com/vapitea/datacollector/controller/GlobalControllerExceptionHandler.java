@@ -19,8 +19,8 @@ public class GlobalControllerExceptionHandler {
     log.info("Invalid DTO: " + ex.getMessage());
   }
 
-  @ExceptionHandler()
-  @ResponseStatus(value = HttpStatus.NOT_FOUND)
+  @ExceptionHandler(NoSuchElementException.class)
+  //@ResponseStatus(value = HttpStatus.NOT_FOUND)
   public void handleWrongJsonFormat(NoSuchElementException ex) {
 
     log.info("Missing resource: " + ex.getMessage());

@@ -64,7 +64,7 @@ public class TeamService {
   @Transactional
   public Team getOneWithDataSources(Long id) {
     Team team = teamRepository.findById(id).orElseThrow();
-    team.getDataSources().size();
+    team.getDataSources().size(); //To load lazy collection
     return team;
   }
 }
