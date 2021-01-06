@@ -29,6 +29,14 @@ Usable credentials:
 -Operator "Valtteri Bottas":"password"  
 -User "Max Verstappen":"qwerty"  
 
+## Screenshots  
+
+![login](documents/screenshots/login.png "login")  
+---
+![user](documents/screenshots/user.png "login")  
+---
+![datasource](documents/screenshots/datasource.png "login")  
+ 
 ## Docs
 
 [specifikacio.md](./documents/specifikacio/specifikacio.md)
